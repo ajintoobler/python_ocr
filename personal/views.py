@@ -85,7 +85,7 @@ def insert(request):
 		temp=str(2)
 		pagecount = range(0,count)
 		for count in pagecount:
-			currentPage=pagecount
+			currentPage=count+1
 			with Image(filename='/home/toobler/Documents/AjinToobler/python/mysite/personal/Files/'+str(file.name)+"["+str(count)+"]") as img:
 				 img.save(filename='/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg")
 
