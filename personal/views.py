@@ -76,19 +76,21 @@ def insert(request):
 		files = {'file': open('/home/toobler/Documents/AjinToobler/python/mysite/personal/Files/'+str(file.name), 'rb')}
 		response=requests.post(url, files=files)
 		print(response.content)
+		savedFileUrl=response.content
 
 		
 		
-		print count_pages(filename)
+		totalPages=count_pages(filename)
 		count= count_pages(filename)
 		temp=str(2)
 		pagecount = range(0,count)
 		for count in pagecount:
+			currentPage=pagecount
 			with Image(filename='/home/toobler/Documents/AjinToobler/python/mysite/personal/Files/'+str(file.name)+"["+str(count)+"]") as img:
 				 img.save(filename='/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg")
 
 			print(pytesseract.image_to_string(PIL.Image.open('/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg"), lang=language))
-			
+			tessaract_ocr=pytesseract.image_to_string(PIL.Image.open('/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg"), lang=language)
 			#Remove Each PDF page image 
 			os.remove('/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg")
 			# solr insertion code
@@ -101,14 +103,15 @@ def insert(request):
 			        "publication": "A test document",
 			        "year":	" A test document",
 			        "synopsis": " A test document",
-			        "page_no": " A test document" ,
-			        "totalpages": " A test document" ,
+			        "page_no": currentPage ,
+			        "totalpages": totalPages ,
 			        "url": "A test document",
-			        "subjects": "A test document",
+			        "subjects": subjects,
 			        "language": " A test document",
-			        "origpath": "A test document",
-			        "Category": " A test document" ,
+			        "origpath": savedFileUrl,
+			        "Category": document_Type ,
 			        "format": "pdf",
+			        "content": tessaract_ocr,
 
 			    },
 			])
