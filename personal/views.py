@@ -1,3 +1,4 @@
+import requests
 import Image
 import PIL.Image
 import pytesseract
@@ -60,47 +61,57 @@ def insert(request):
 
 	#insert container into fedora repository
 	if type=="Container":
-		url = ''
+		url = 'http://localhost:8080/fcrepo-webapp-4.5.0/rest/'
 		response = requests.post(url)
 		print(response.content)
-	# # Get the name of the uploaded file
-	# file = request.FILES['file']
-	# print file.name
-	# handle_uploaded_file(file)
-	# filename='/home/toobler/Documents/AjinToobler/python/mysite/personal/Files/'+str(file.name)
+	else:
+		# Get the name of the uploaded file
+		file = request.FILES['file']
+		print file.name
+		handle_uploaded_file(file)
+		filename='/home/toobler/Documents/AjinToobler/python/mysite/personal/Files/'+str(file.name)
 	
-	# print count_pages(filename)
-	# count= count_pages(filename)
-	# temp=str(2)
-	# pagecount = range(0,count)
-	# for count in pagecount:
-	# 	with Image(filename='/home/toobler/Documents/AjinToobler/python/mysite/personal/Files/'+str(file.name)+"["+str(count)+"]") as img:
-	# 		 img.save(filename='/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg")
+		#insert file into fedora repository
+		url = 'http://localhost:8080/fcrepo-webapp-4.5.0/rest/'
+		files = {'file': open('/home/toobler/Documents/AjinToobler/python/mysite/personal/Files/'+str(file.name), 'rb')}
+		response=requests.post(url, files=files)
+		print(response.content)
 
-	# 	print(pytesseract.image_to_string(PIL.Image.open('/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg"), lang=language))
 		
-		# os.remove("/home/toobler/Documents/selftestocr/temp"+str(count)+".jpg")
-		# solr insertion code
-		# solr = pysolr.Solr('http://localhost:8984/solr/DocumentSearch/', timeout=10)
-		# solr.add([
-		#     {
-		#         "pdfid": "doc_1",
-		#         "title": "A test document",
-		#         "author": "A test document",
-		#         "publication": "A test document",
-		#         "year":	" A test document",
-		#         "synopsis": " A test document",
-		#         "page_no": pagecount ,
-		#         "totalpages": count ,
-		#         "url": "A test document",
-		#         "subjects": "A test document",
-		#         "language": language,
-		#         "origpath": "A test document",
-		#         "Category": document_Type ,
-		#         "format": "pdf",
+		
+		print count_pages(filename)
+		count= count_pages(filename)
+		temp=str(2)
+		pagecount = range(0,count)
+		for count in pagecount:
+			with Image(filename='/home/toobler/Documents/AjinToobler/python/mysite/personal/Files/'+str(file.name)+"["+str(count)+"]") as img:
+				 img.save(filename='/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg")
 
-		#     },
-		# ])
+			print(pytesseract.image_to_string(PIL.Image.open('/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg"), lang=language))
+			
+			#Remove Each PDF page image 
+			os.remove('/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg")
+			# solr insertion code
+			solr = pysolr.Solr('http://localhost:8983/solr/DocumentSearch/', timeout=10)
+			solr.add([
+			    {
+			        "pdfid": "doc_1",
+			        "title": "A test document",
+			        "author": "A test document",
+			        "publication": "A test document",
+			        "year":	" A test document",
+			        "synopsis": " A test document",
+			        "page_no": " A test document" ,
+			        "totalpages": " A test document" ,
+			        "url": "A test document",
+			        "subjects": "A test document",
+			        "language": " A test document",
+			        "origpath": "A test document",
+			        "Category": " A test document" ,
+			        "format": "pdf",
+
+			    },
+			])
 	
 	return render(request,'personal/homee.html')
 
