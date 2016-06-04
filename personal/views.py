@@ -14,16 +14,16 @@ from personal import db
 # front page
 def index(request):
 
-    return render(request,'personal/login.html')
+    return render(request,'personal/adminLogin.html')
 
 # login
 def login(request):
 	
 	result=db.login_view(request)
 	if result == "true":
-		return render(request,'personal/home.html')
+		return render(request,'personal/adminHome.html')
 	else:
-		return render(request,'personal/login.html')
+		return render(request,'personal/adminLogin.html')
 
 # submit contianer
 # def insert(request):
@@ -52,6 +52,7 @@ def handle_uploaded_file(f):
 def insert(request):
 	filename=''
 	count=''
+	str1=''
 	type=request.POST.get('type')
 	Identifier=request.POST.get('Identifier')
 	language=request.POST.get('ocr_languages')
@@ -89,10 +90,12 @@ def insert(request):
 			with Image(filename='/home/toobler/Documents/AjinToobler/python/mysite/personal/Files/'+str(file.name)+"["+str(count)+"]") as img:
 				 img.save(filename='/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg")
 
-			print(pytesseract.image_to_string(PIL.Image.open('/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg"), lang=language))
+			# print(pytesseract.image_to_string(PIL.Image.open('/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg"), lang=language))
 			tessaract_ocr=pytesseract.image_to_string(PIL.Image.open('/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg"), lang=language)
 			#Remove Each PDF page image 
 			os.remove('/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg")
+			# Convert a Unicode string to a string
+			contents=tessaract_ocr.decode('utf8')
 			# solr insertion code
 			solr = pysolr.Solr('http://localhost:8983/solr/DocumentSearch/', timeout=10)
 			solr.add([
@@ -111,10 +114,14 @@ def insert(request):
 			        "origpath": savedFileUrl,
 			        "Category": document_Type ,
 			        "format": "pdf",
-			        "content": tessaract_ocr,
+			        "content": contents,
 
 			    },
 			])
 	
 	return render(request,'personal/homee.html')
+	
+#show user search page 
+def userSearch(request):
 
+    return render(request,'personal/userSearchPage.html')
