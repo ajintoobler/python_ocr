@@ -44,8 +44,8 @@ def count_pages(filename):
     return len(rxcountpages.findall(data))
 
 # upload files from client
-def handle_uploaded_file(f):
-    with open('/home/toobler/Documents/AjinToobler/python/mysite/personal/Files/'+str(f.name), 'wb+') as destination:
+def handle_uploaded_file(f,current_dir):
+    with open(current_dir+'/personal/Files/'+str(f.name), 'wb+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)
 @csrf_exempt
@@ -59,7 +59,9 @@ def insert(request):
 	document_Type=request.POST.get('document_Type')
 	subjects=request.POST.get('subjects')
 	title=request.POST.get('title')
-
+	# get current directory
+	current_dir=os.getcwd()
+	print current_dir
 	#insert container into fedora repository
 	if type=="Container":
 		url = 'http://localhost:8080/fcrepo-webapp-4.5.0/rest/'
@@ -69,12 +71,12 @@ def insert(request):
 		# Get the name of the uploaded file
 		file = request.FILES['file']
 		print file.name
-		handle_uploaded_file(file)
-		filename='/home/toobler/Documents/AjinToobler/python/mysite/personal/Files/'+str(file.name)
+		handle_uploaded_file(file,current_dir)
+		filename=current_dir+'/personal/Files/'+str(file.name)
 	
 		#insert file into fedora repository
 		url = 'http://localhost:8080/fcrepo-webapp-4.5.0/rest/'
-		files = {'file': open('/home/toobler/Documents/AjinToobler/python/mysite/personal/Files/'+str(file.name), 'rb')}
+		files = {'file': open(current_dir+'/personal/Files/'+str(file.name), 'rb')}
 		response=requests.post(url, files=files)
 		print(response.content)
 		savedFileUrl=response.content
@@ -87,13 +89,13 @@ def insert(request):
 		pagecount = range(0,count)
 		for count in pagecount:
 			currentPage=count+1
-			with Image(filename='/home/toobler/Documents/AjinToobler/python/mysite/personal/Files/'+str(file.name)+"["+str(count)+"]") as img:
-				 img.save(filename='/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg")
+			with Image(filename=current_dir+'/personal/Files/'+str(file.name)+"["+str(count)+"]") as img:
+				 img.save(filename=current_dir+'/personal/temp/temp'+str(count)+".jpg")
 
 			# print(pytesseract.image_to_string(PIL.Image.open('/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg"), lang=language))
-			tessaract_ocr=pytesseract.image_to_string(PIL.Image.open('/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg"), lang=language)
+			tessaract_ocr=pytesseract.image_to_string(PIL.Image.open(current_dir+'/personal/temp/temp'+str(count)+".jpg"), lang=language)
 			#Remove Each PDF page image 
-			os.remove('/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg")
+			os.remove(current_dir+'/personal/temp/temp'+str(count)+".jpg")
 			# Convert a Unicode string to a string
 			contents=tessaract_ocr.decode('utf8')
 			# solr insertion code
@@ -124,4 +126,9 @@ def insert(request):
 #show user search page 
 def userSearch(request):
 
-    return render(request,'personal/userSearchPage.html')
+	return render(request,'personal/userSearchPage.html')
+
+#show user search Result page 
+def userSearchResult(request):
+
+    return render(request,'personal/userSearchResult.html')

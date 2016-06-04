@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^password-login/$', views.login),
     url(r'^insert/$', views.insert),
     url(r'^searchpage/$', views.userSearch),
+    url(r'^searchpageresult/$', views.userSearchResult),
 
 
 ]
