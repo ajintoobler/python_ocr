@@ -125,7 +125,10 @@ def insert(request):
 	
 #show user search page 
 def userSearch(request):
-
+	solr = pysolr.Solr('http://localhost:8983/solr/DocumentSearch/', timeout=10)
+	searchWord=request.POST.get('searchWord')
+	results = solr.search(searchWord)
+	print results
 	return render(request,'personal/userSearchPage.html')
 
 #show user search Result page 
