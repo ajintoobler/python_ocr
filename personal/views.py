@@ -1,3 +1,4 @@
+import random
 import requests
 import Image
 import PIL.Image
@@ -59,6 +60,11 @@ def insert(request):
 	document_Type=request.POST.get('document_Type')
 	subjects=request.POST.get('subjects')
 	title=request.POST.get('title')
+	book_title=request.POST.get('book_title')
+	author=request.POST.get('author')
+	year=request.POST.get('year')
+	description=request.POST.get('description')
+	book_id=book_title+"_"+str(random.randint(1000, 9999))
 	# get current directory
 	current_dir=os.getcwd()
 	print current_dir
@@ -92,27 +98,26 @@ def insert(request):
 			with Image(filename=current_dir+'/personal/Files/'+str(file.name)+"["+str(count)+"]") as img:
 				 img.save(filename=current_dir+'/personal/temp/temp'+str(count)+".jpg")
 
-			# print(pytesseract.image_to_string(PIL.Image.open('/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg"), lang=language))
+			print(pytesseract.image_to_string(PIL.Image.open('/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg"), lang=language))
 			tessaract_ocr=pytesseract.image_to_string(PIL.Image.open(current_dir+'/personal/temp/temp'+str(count)+".jpg"), lang=language)
 			#Remove Each PDF page image 
 			os.remove(current_dir+'/personal/temp/temp'+str(count)+".jpg")
 			# Convert a Unicode string to a string
-			contents=tessaract_ocr.decode('utf8')
+			unicode_contents=tessaract_ocr.decode('utf8')
+			contents = unicode_contents.replace("\n", "");
 			# solr insertion code
 			solr = pysolr.Solr('http://localhost:8983/solr/DocumentSearch/', timeout=10)
 			solr.add([
 			    {
-			        "pdfid": "doc_1",
-			        "title": "A test document",
-			        "author": "A test document",
-			        "publication": "A test document",
-			        "year":	" A test document",
-			        "synopsis": " A test document",
+			        "pdfid": book_id,
+			        "title": book_title,
+			        "author": author,
+			        "year":	year,
+			        "synopsis": description,
 			        "page_no": currentPage ,
 			        "totalpages": totalPages ,
-			        "url": "A test document",
 			        "subjects": subjects,
-			        "language": " A test document",
+			        "language": language,
 			        "origpath": savedFileUrl,
 			        "Category": document_Type ,
 			        "format": "pdf",
@@ -124,12 +129,18 @@ def insert(request):
 	return render(request,'personal/homee.html')
 	
 #show user search page 
+def userSearchpage(request):
+	return render(request,'personal/userSearchPage.html')
+
 def userSearch(request):
 	solr = pysolr.Solr('http://localhost:8983/solr/DocumentSearch/', timeout=10)
+
+	# results = solr.search('page_no:"5"')
 	searchWord=request.POST.get('searchWord')
 	results = solr.search(searchWord)
-	print results
-	return render(request,'personal/userSearchPage.html')
+	for result in results:
+		print result['content']
+	return render(request,'personal/userSearchResult.html')
 
 #show user search Result page 
 def userSearchResult(request):
