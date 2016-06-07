@@ -98,14 +98,14 @@ def insert(request):
 			with Image(filename=current_dir+'/personal/Files/'+str(file.name)+"["+str(count)+"]") as img:
 				 img.save(filename=current_dir+'/personal/temp/temp'+str(count)+".jpg")
 
-			print(pytesseract.image_to_string(PIL.Image.open('/home/toobler/Documents/AjinToobler/python/mysite/personal/temp/temp'+str(count)+".jpg"), lang=language))
+			print(pytesseract.image_to_string(PIL.Image.open(current_dir+'/personal/temp/temp'+str(count)+".jpg"), lang=language))
 			tessaract_ocr=pytesseract.image_to_string(PIL.Image.open(current_dir+'/personal/temp/temp'+str(count)+".jpg"), lang=language)
 			#Remove Each PDF page image 
 			os.remove(current_dir+'/personal/temp/temp'+str(count)+".jpg")
 			# Convert a Unicode string to a string
 			unicode_contents=tessaract_ocr.decode('utf8')
 			contents = unicode_contents.replace("\n", "");
-			# solr insertion code
+			# solr insertion for book
 			solr = pysolr.Solr('http://localhost:8983/solr/DocumentSearch/', timeout=10)
 			solr.add([
 			    {
@@ -137,6 +137,7 @@ def userSearch(request):
 
 	# results = solr.search('page_no:"5"')
 	searchWord=request.POST.get('searchWord')
+	print searchWord
 	results = solr.search(searchWord)
 	for result in results:
 		print result['content']
