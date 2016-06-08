@@ -138,10 +138,21 @@ def userSearch(request):
 	# results = solr.search('page_no:"5"')
 	searchWord=request.POST.get('searchWord')
 	print searchWord
-	results = solr.search(searchWord)
+	params = {
+  	  'facet': 'on',
+  	  'facet_queries': {},
+  	  'facet.field': 'language',
+  	  'facet.field':'subjects'
+	}
+	results = solr.search(searchWord, **params)
+	my_list = []
+	# results = solr.search(searchWord)
 	for result in results:
-		print result['content']
-	return render(request,'personal/userSearchResult.html')
+		print result
+		my_list.append(result)
+		
+		print result['language']
+	return render(request,'personal/userSearchResult.html',{'result':my_list})
 
 #show user search Result page 
 def userSearchResult(request):
