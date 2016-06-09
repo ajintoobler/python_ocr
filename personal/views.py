@@ -96,12 +96,14 @@ def insert(request):
 		for count in pagecount:
 			currentPage=count+1
 			with Image(filename=current_dir+'/personal/Files/'+str(file.name)+"["+str(count)+"]") as img:
+				 scaler = 3
+				 img.resize(img.width * scaler, img.height * scaler)
 				 img.save(filename=current_dir+'/personal/temp/temp'+str(count)+".jpg")
 
 			print(pytesseract.image_to_string(PIL.Image.open(current_dir+'/personal/temp/temp'+str(count)+".jpg"), lang=language))
 			tessaract_ocr=pytesseract.image_to_string(PIL.Image.open(current_dir+'/personal/temp/temp'+str(count)+".jpg"), lang=language)
 			#Remove Each PDF page image 
-			os.remove(current_dir+'/personal/temp/temp'+str(count)+".jpg")
+			# os.remove(current_dir+'/personal/temp/temp'+str(count)+".jpg")
 			# Convert a Unicode string to a string
 			unicode_contents=tessaract_ocr.decode('utf8')
 			contents = unicode_contents.replace("\n", "");
