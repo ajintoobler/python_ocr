@@ -1,3 +1,5 @@
+import tika 
+from tika import parser 
 import random
 import requests
 import Image
@@ -102,8 +104,11 @@ def insert(request):
 
 			print(pytesseract.image_to_string(PIL.Image.open(current_dir+'/personal/temp/temp'+str(count)+".jpg"), lang=language))
 			tessaract_ocr=pytesseract.image_to_string(PIL.Image.open(current_dir+'/personal/temp/temp'+str(count)+".jpg"), lang=language)
+			#tikka parser code
+			# parsed = parser.from_file(current_dir+'/personal/temp/temp'+str(count)+".jpg")
+			# print(parsed["content"])
 			#Remove Each PDF page image 
-			# os.remove(current_dir+'/personal/temp/temp'+str(count)+".jpg")
+			os.remove(current_dir+'/personal/temp/temp'+str(count)+".jpg")
 			# Convert a Unicode string to a string
 			unicode_contents=tessaract_ocr.decode('utf8')
 			contents = unicode_contents.replace("\n", "");
@@ -133,7 +138,7 @@ def insert(request):
 #show user search page 
 def userSearchpage(request):
 	return render(request,'personal/userSearchPage.html')
-
+# solr search word
 def userSearch(request):
 	solr = pysolr.Solr('http://localhost:8983/solr/DocumentSearch/', timeout=10)
 
