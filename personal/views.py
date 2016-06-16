@@ -56,6 +56,7 @@ def insert(request):
 	filename=''
 	count=''
 	str1=''
+	ocrMethod=request.POST.get('ocrMethod')
 	type=request.POST.get('type')
 	Identifier=request.POST.get('Identifier')
 	language=request.POST.get('ocr_languages')
@@ -75,6 +76,7 @@ def insert(request):
 		url = 'http://localhost:8080/fcrepo-webapp-4.5.0/rest/'
 		response = requests.post(url)
 		print(response.content)
+		savedContainerUrl=response.content
 	else:
 		# Get the name of the uploaded file
 		file = request.FILES['file']
@@ -95,47 +97,51 @@ def insert(request):
 		count= count_pages(filename)
 		temp=str(2)
 		pagecount = range(0,count)
-		for count in pagecount:
-			currentPage=count+1
-			with Image(filename=current_dir+'/personal/Files/'+str(file.name)+"["+str(count)+"]") as img:
-				 scaler = 3
-				 img.resize(img.width * scaler, img.height * scaler)
-				 img.save(filename=current_dir+'/personal/temp/temp'+str(count)+".jpg")
-
-			print(pytesseract.image_to_string(PIL.Image.open(current_dir+'/personal/temp/temp'+str(count)+".jpg"), lang=language))
-			tessaract_ocr=pytesseract.image_to_string(PIL.Image.open(current_dir+'/personal/temp/temp'+str(count)+".jpg"), lang=language)
+		if ocrMethod=="Tika_OCR":
 			#tikka parser code
-			# parsed = parser.from_file(current_dir+'/personal/temp/temp'+str(count)+".jpg")
-			# print(parsed["content"])
-			#Remove Each PDF page image 
-			os.remove(current_dir+'/personal/temp/temp'+str(count)+".jpg")
-			# Convert a Unicode string to a string
-			unicode_contents=tessaract_ocr.decode('utf8')
-			contents = unicode_contents.replace("\n", "");
-			# solr insertion for book
-			solr = pysolr.Solr('http://localhost:8983/solr/DocumentSearch/', timeout=10)
-			solr.add([
-			    {
-			        "pdfid": book_id,
-			        "title": book_title,
-			        "author": author,
-			        "year":	year,
-			        "synopsis": description,
-			        "page_no": currentPage ,
-			        "totalpages": totalPages ,
-			        "subjects": subjects,
-			        "language": language,
-			        "origpath": savedFileUrl,
-			        "Category": document_Type ,
-			        "format": "pdf",
-			        "content": contents,
+			parsed = parser.from_file(filename)
+			contents=parsed["content"]
+			print(parsed["content"])
+		else:	
+			for count in pagecount:
+				currentPage=count+1
+				with Image(filename=current_dir+'/personal/Files/'+str(file.name)+"["+str(count)+"]") as img:
+					 scaler = 3
+					 img.resize(img.width * scaler, img.height * scaler)
+					 img.save(filename=current_dir+'/personal/temp/temp'+str(count)+".jpg")
 
-			    },
-			])
+				print(pytesseract.image_to_string(PIL.Image.open(current_dir+'/personal/temp/temp'+str(count)+".jpg"), lang=language))
+				tessaract_ocr=pytesseract.image_to_string(PIL.Image.open(current_dir+'/personal/temp/temp'+str(count)+".jpg"), lang=language)
+				
+				#Remove Each PDF page image 
+				os.remove(current_dir+'/personal/temp/temp'+str(count)+".jpg")
+				# Convert a Unicode string to a string
+				unicode_contents=tessaract_ocr.decode('utf8')
+				contents = unicode_contents.replace("\n", "");
+				# solr insertion for book
+				solr = pysolr.Solr('http://localhost:8983/solr/DocumentSearch/', timeout=10)
+				solr.add([
+				    {
+				        "pdfid": book_id,
+				        "title": book_title,
+				        "author": author,
+				        "year":	year,
+				        "synopsis": description,
+				        "page_no": currentPage ,
+				        "totalpages": totalPages ,
+				        "subjects": subjects,
+				        "language": language,
+				        "origpath": savedFileUrl,
+				        "Category": document_Type ,
+				        "format": "pdf",
+				        "content": contents,
+
+				    },
+				])
+	result=db.insert_container(request,savedContainerUrl)
+	return render(request,'personal/adminCollectionView.html')
 	
-	return render(request,'personal/homee.html')
-	
-#show user search page 
+# show user search page 
 def userSearchpage(request):
 	return render(request,'personal/userSearchPage.html')
 # solr search word

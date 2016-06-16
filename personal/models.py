@@ -13,3 +13,12 @@ class PersonalLogin(models.Model):
         db_table = 'personal_login'
 
 
+class Container(models.Model):
+    container_id = models.AutoField(primary_key=True)
+    container_name = models.CharField(max_length=45)
+    container_url = models.CharField(max_length=100)
+    container_visibility = models.CharField(max_length=45)
+
+    class Meta:
+        managed = False
+        db_table = 'container'
