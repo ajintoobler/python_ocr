@@ -100,8 +100,30 @@ def insert(request):
 		if ocrMethod=="Tika_OCR":
 			#tikka parser code
 			parsed = parser.from_file(filename)
-			contents=parsed["content"]
+			cont=parsed["content"]
+			contents = cont.replace("\n", " ");
 			print(parsed["content"])
+			print(parsed["xmpTPg:NPages"])
+			# solr insertion for book
+			solr = pysolr.Solr('http://localhost:8983/solr/DocumentSearch/', timeout=10)
+			solr.add([
+			    {
+			        "pdfid": book_id,
+			        "title": book_title,
+			        "author": author,
+			        "year":	year,
+			        "synopsis": description,
+			        "page_no": 'currentPage',
+			        "totalpages": 'totalPages' ,
+			        "subjects": subjects,
+			        "language": language,
+			        "origpath": savedFileUrl,
+			        "Category": document_Type ,
+			        "format": "pdf",
+			        "content": contents,
+
+			    },
+			])
 		else:	
 			for count in pagecount:
 				currentPage=count+1
