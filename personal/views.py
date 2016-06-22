@@ -103,7 +103,6 @@ def insert(request):
 			cont=parsed["content"]
 			contents = cont.replace("\n", " ");
 			print(parsed["content"])
-			print(parsed["xmpTPg:NPages"])
 			# solr insertion for book
 			solr = pysolr.Solr('http://localhost:8983/solr/DocumentSearch/', timeout=10)
 			solr.add([
