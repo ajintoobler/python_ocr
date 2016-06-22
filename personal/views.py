@@ -138,7 +138,7 @@ def insert(request):
 
 				    },
 				])
-	result=db.insert_container(request,savedContainerUrl)
+	# result=db.insert_container(request,savedContainerUrl)
 	return render(request,'personal/adminCollectionView.html')
 	
 # show user search page 

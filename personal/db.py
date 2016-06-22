@@ -19,7 +19,7 @@ def login_view(request):
 def insert_container(request,savedContainerUrl):
 	container_name=request.POST.get('Identifier')
 	container_url=savedContainerUrl
-	p = models.Container.objects(container_name=container_name,container_url=container_url,container_visibility=0)
+	p = models.Container(container_name=container_name,container_url=container_url,container_visibility=0)
 	p.save()
 	return "true"
 	
