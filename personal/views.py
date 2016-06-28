@@ -12,6 +12,7 @@ import subprocess
 import pysolr
 from wand.image import Image
 from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from personal import db
 # front page
@@ -28,6 +29,11 @@ def login(request):
 	else:
 		return render(request,'personal/adminLogin.html')
 
+# redirect page
+def redirect(request):
+	
+	return render(request,'personal/adminHome.html')
+	
 # submit contianer
 # def insert(request):
 # 	type=request.POST.get('type')
@@ -77,6 +83,8 @@ def insert(request):
 		response = requests.post(url)
 		print(response.content)
 		savedContainerUrl=response.content
+		result=db.insert_container(request,savedContainerUrl)
+		return HttpResponseRedirect('/redirect/')
 	else:
 		# Get the name of the uploaded file
 		file = request.FILES['file']
@@ -160,7 +168,7 @@ def insert(request):
 				    },
 				])
 	# result=db.insert_container(request,savedContainerUrl)
-	return render(request,'personal/adminCollectionView.html')
+	return HttpResponseRedirect('/redirect/')
 	
 # show user search page 
 def userSearchpage(request):
@@ -186,9 +194,14 @@ def userSearch(request):
 		my_list.append(result)
 		
 		print result['language']
+
 	return render(request,'personal/userSearchResult.html',{'result':my_list})
 
 #show user search Result page 
 def userSearchResult(request):
 
     return render(request,'personal/userSearchResult.html')
+
+def adminCollectionView(request):
+
+    return render(request,'personal/adminCollectionView.html')

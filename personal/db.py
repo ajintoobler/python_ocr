@@ -23,4 +23,3 @@ def insert_container(request,savedContainerUrl):
 	p.save()
 	return "true"
 	
-

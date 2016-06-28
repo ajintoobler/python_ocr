@@ -10,36 +10,41 @@
     <link rel="shortcut icon" href="">
     <link rel="stylesheet" href="../static/personal/css/style.css">
     <!--[if IE]>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
-	<![endif]-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
 </head>
 
 <body>
     <div class="outer navbar navbar-default">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-1">
-                    <label class="label-line">Category</label>
-                </div>
-                <div class="col-lg-2">
-                    <select class="form-control">
-                        <option>All</option>
-                        <option>One</option>
-                        <option>Two</option>
-                    </select>
-                </div>
-                <div class="col-lg-4">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for...">
-                        <span class="input-group-btn">
-					<button class="btn btn-danger" type="button">Go!</button>
-				  </span>
+            <form action="/searchpage/" method="post" name="search">{% csrf_token %}
+                <div class="row">
+                    <div class="col-lg-1">
+                        <label class="label-line">Category</label>
+                    </div>
+                    <div class="col-lg-2">
+                        <select class="form-control">
+                            <option>All</option>
+                            <option>Travel</option>
+                            <option>Biographies</option>
+                            <option>History</option>
+                            <option>Geography</option>
+                            <option>Biology</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="searchWord" placeholder="Search for...">
+                            <span class="input-group-btn">
+                    <button class="btn btn-danger" type="submit">Go!</button>
+                  </span>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
                     </div>
                 </div>
-                <div class="col-lg-5">
-                </div>
-            </div>
+            </form>
         </div>
     </div>
     <div class="container">
@@ -48,12 +53,10 @@
         <ol class="listnumber">
             <li>
                 <div class="listblock">
-                    <h4><a href="#">{{ o.language}} </a><span class="label label-info">10</span></h4>
-                    <p><span class="text-muted">Author</span> : {{ o.author}}  </p>
+                    <h4><a href="#">{{ o.subjects}} </a><span class="label label-info">10</span></h4>
+                    <p><span class="text-muted">Author</span> : {{ o.author}} </p>
                     <h5 class="text-muted">Description :</h5>
-                    <p> Fiction is a form of narrative, one of the four rhetorical modes of discourse. Fiction-writing also has modes for fiction-writing: action, exposition, description, dialogue, summary, and transition (Morrell 2006, p. 127). Author Peter Selgin refers to methods, including action, dialogue, thoughts, summary, scene, and description (Selgin 2007, p. 38). Currently, there is no consensus within the writing community regarding the number and composition of fiction-writing modes and their uses.</p>
-                    <h5 class="text-muted">Remarks :</h5>
-                    <p> Fiction is a form of narrative, one of the four rhetorical modes of discourse. Fiction-writing also has modes for fiction-writing: action, exposition, description, dialogue, summary, and transition (Morrell 2006, p. 127). </p>
+                    <p>{{ o.synopsis}}</p>
                     <p><small><span class="text-muted">Last Update </span>: 02-06-2016</small> </p>
                 </div>
             </li>
